@@ -1,0 +1,111 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: demo-ns
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: demo-ns
+  name: demo-cs
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: demo-cs
+  template:
+    metadata:
+      labels:
+        app: demo-cs
+    spec:
+      containers:
+      - name: demo-cs
+        image: demo-cs:0.1
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: "0.5Gi"
+            cpu: "512m"
+        ports:
+        - containerPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: demo-ns
+  name: demo-py
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: demo-py
+  template:
+    metadata:
+      labels:
+        app: demo-py
+    spec:
+      containers:
+      - name: demo-py
+        image: demo-py:0.1
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: "0.5Gi"
+            cpu: "512m"
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: demo-ns
+  name: cs-lb
+spec:
+  type: LoadBalancer
+  selector:
+    app: demo-cs
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: demo-ns
+  name: py-lb
+spec:
+  type: LoadBalancer
+  selector:
+    app: demo-py
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: demo-ns
+  name: demo-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: localhost
+    http:
+      paths:
+      - path: /cs(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: cs-lb
+            port:
+              number: 80
+      - path: /py(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: py-lb
+            port:
+              number: 80
