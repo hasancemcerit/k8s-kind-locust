@@ -57,6 +57,8 @@ While load testing simple APIs written in `C#` and `Python`, it could be an idea
 
       The following command will create cluster.
 
+      ⚠️ This cluster uses port 8️⃣0️⃣ allow ingress traffic, as specified under `extraPortMappings` in `cluster-config.yaml` file. If you are running any web server or application that has already claimed this port, cluster creation will fail.
+
       ```bash
       kind create cluster --config deploy\cluster-config.yaml
       # check cluster info 
@@ -80,6 +82,12 @@ While load testing simple APIs written in `C#` and `Python`, it could be an idea
 
       Follow [MicroK8s installation](https://microk8s.io/docs/install-alternatives) instructions.
 
+      In this setup, MicroK8s is insalled to [WSL/Ubuntu](https://learn.microsoft.com/en-us/windows/wsl/install) running on Windows 11, by running
+
+      ```bash
+      sudo snap install microk8s --classic
+      ```
+
       #### configure cluster
 
       The following commands will configure MicroK8s cluster.
@@ -90,8 +98,7 @@ While load testing simple APIs written in `C#` and `Python`, it could be an idea
       # check status
       microk8s status --wait-ready
 
-      # enable ingress and storage
-      microk8s enable ingress
+      # enable storage
       microk8s enable hostpath-storage
       # disable dns and ha-cluster (not needed for this setup)
       microk8s disable dns
@@ -122,11 +129,18 @@ While load testing simple APIs written in `C#` and `Python`, it could be an idea
 
    <p></p>
 
-3. Create nginx ingress
+3. Create NGINX Ingress Controller
+
+   for kind:
    ```bash
    kubectl apply --filename https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/kind/deploy.yaml
 
    kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=180s
+   ```
+
+   for MicroK8s:
+   ```bash
+   microk8s enable ingress
    ```
 
 4. Deploy API Pods
@@ -149,6 +163,8 @@ While load testing simple APIs written in `C#` and `Python`, it could be an idea
    kubectl get pods -n demo-ns
    # describe ingress and check for rules
    kubectl describe ingress demo-ingress -n demo-ns
+   # get all objects belong to the namespace
+   kubectl get all -n demo-ns
    ```
 
 5. Test Endpoints
@@ -181,7 +197,7 @@ While load testing simple APIs written in `C#` and `Python`, it could be an idea
 
 7. Run locust test
 
-   Refer to README.md under test directory.
+   Refer to [README.md](/tests/README.md) under test directory.
 
 8. Cleanup
 
