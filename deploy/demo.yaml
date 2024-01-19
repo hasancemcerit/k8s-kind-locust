@@ -92,8 +92,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: localhost
-    http:
+  - http:
       paths:
       - path: /cs(/|$)(.*)
         pathType: ImplementationSpecific
