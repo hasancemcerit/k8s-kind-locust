@@ -1,16 +1,23 @@
 # https://hub.docker.com/_/microsoft-dotnet-sdk/
 # build stage
-FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
+
+ARG BUILDPLATFORM
+ARG TARGETPLATFORM
+ARG TARGETARCH
+
+RUN echo "Building on $BUILDPLATFORM, targeting for $TARGETPLATFORM"
+
 WORKDIR /src
 
 # copy csproj and restore for alpine/musl
 COPY *.csproj ./
 
-RUN dotnet restore -r linux-musl-x64
+RUN dotnet restore --arch $TARGETARCH
 
 # copy and publish app and libraries
 COPY . .
-RUN dotnet publish -c Release -p:PublishDir=/test-api -r linux-musl-x64 --self-contained false
+RUN dotnet publish -c Release -p:PublishDir=/test-api --arch $TARGETARCH --self-contained false
 
 # https://hub.docker.com/_/microsoft-dotnet
 # app stage
