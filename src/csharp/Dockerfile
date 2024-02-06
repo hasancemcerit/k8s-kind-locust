@@ -26,13 +26,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime
 WORKDIR /test-api
 COPY --from=build /test-api .
 
-# Enable globalization APIs
-# https://github.com/dotnet/announcements/issues/20
-ENV \
-  DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
-  LC_ALL=en_US.UTF-8 \
-  LANG=en_US.UTF-8
-
 # App specific Env. variables
 ENV \
   ASPNETCORE_ENVIRONMENT=Docker \
