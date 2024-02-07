@@ -5,7 +5,7 @@
     <RuntimeIdentifiers>linux-x64;win-x64;linux-musl-x64;linux-arm64</RuntimeIdentifiers>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <InvariantGlobalization>false</InvariantGlobalization>
+    <InvariantGlobalization>true</InvariantGlobalization>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
