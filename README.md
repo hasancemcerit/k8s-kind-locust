@@ -187,19 +187,40 @@ While load testing simple APIs written in `C#` and `Python`, it could be an idea
    kubectl get pods -n demo-ns
    ```
 
-6. (optional) Install metrics server
+6. Swarm locusts a.k.a run load test 🦗
 
-   ```bash
-   kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+   Assuming you already have or installed `python`, `pip(3)`, and `python-venv` that are required to run locust.
 
-   kubectl patch -n kube-system deployment metrics-server --type=json -p '[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls"}]'
+   If not, please do so. There are million ways to install these tools, you can choose depending on your OS/liking.
+   
+   - create and activate virtual environment
+   
+   It's advisable to run python on it's own virtual environment.
+
+   ```
+   python -m venv .env/locust-env
+   source .env/locust-env/bin/activate
+   ```
+   - install locust
+   
+   ```
+   pip3 install locust
+   ```
+   - run load test
+
+   `locust.conf` file has some [sensible defaults](https://docs.locust.io/en/stable/configuration.html) to run the load test. You can customize this file, or add command line arguments to overwrite them.
+
+   🔥 Be careful not to burn your CPUs. 😉
+
+   ```
+   locust -f get_command.py
    ```
 
-7. Run locust test
+   Sit back and relax while bugs are in action.
 
-   Refer to [README.md](/tests/README.md) under test directory.
+   <a href="https://asciinema.org/a/atsqrwnpKEcxmnSL9oh70J9J3?autoplay=1" rel="nofollow"><img src="https://asciinema.org/a/atsqrwnpKEcxmnSL9oh70J9J3.svg" alt="Test Results" data-canonical-src="https://asciinema.org/a/atsqrwnpKEcxmnSL9oh70J9J3.svg" style="max-width: 50%;"></a>
 
-8. Cleanup
+7. Cleanup
 
    ```bash
    kubectl delete all --all -n demo-ns
@@ -211,6 +232,13 @@ While load testing simple APIs written in `C#` and `Python`, it could be an idea
 
 #### Other useful commands
 
+- Install metrics server (optional)
+```bash
+   kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+   kubectl patch -n kube-system deployment metrics-server --type=json -p '[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls"}]'
+   ```
+- manual expose
 ```bash
 kubectl expose deployment demo-deploy --type=LoadBalancer --port 80 --target-port=80 --name demo-lb --namespace demo-ns
 ```
