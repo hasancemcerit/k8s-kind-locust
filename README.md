@@ -32,7 +32,7 @@ While load testing simple APIs written in `C#` and `Python`, it could be an idea
 1. Build API images
 
    ```bash
-   docker build -f .\src\charp\Dockerfile .\src\csharp -t demo-cs:0.1
+   docker build -f .\src\csharp\Dockerfile .\src\csharp -t demo-cs:0.1
    docker build -f .\src\python\Dockerfile .\src\python -t demo-py:0.1
    # optionally tag images as latest
    docker tag demo-cs:0.1 demo:latest
