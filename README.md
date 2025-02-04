@@ -200,6 +200,8 @@ While load testing simple APIs written in `C#` and `Python`, it could be an idea
    ```
    python -m venv .env/locust-env
    source .env/locust-env/bin/activate
+   or
+   . .\.env\locust-env\Scripts\Activate.ps1
    ```
    - install locust
    

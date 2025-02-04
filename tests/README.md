@@ -7,6 +7,8 @@
 ```
 python -m venv .env/locust-env
 source .env/locust-env/bin/activate
+
+. .\.env\locust-env\Scripts\Activate.ps1
 ```
 - install locust
 
