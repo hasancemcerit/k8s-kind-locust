@@ -7,17 +7,12 @@ CLUSTER_NAME=demo-cl
 
 # create cluster if it doesn't exist
 if ! kind get clusters -q | grep -qx "$CLUSTER_NAME" ; then 
-    kind create cluster --config cluster-config.yaml
-    # TODO: 
-    # check cluster info 
-    #kubectl cluster-info --context kind-demo-cl
-    # live probe
-    # change the port number from above
-    #curl -k https://localhost:57826/livez?verbose
+    kind create cluster --config deploy/cluster-config.yaml
+    kubectl get --raw='/livez'
+    echo
 fi
 
 # load images into cluster
-# TODO: sort by creation date and get the latest and check if exists
 kind load docker-image demo-cs:0.1 demo-py:0.1 --name $CLUSTER_NAME
 
 # install nginx ingress controller
