@@ -150,16 +150,16 @@ While load testing simple APIs written in `C#` and `Python`, it could be an idea
    - namespace
       - demo-ns
    - 2 deployments
-      - demo-cs
-      - demo-py
-   - 2 loadbalancer as services
-      - cs-lb
-      - py-lb
+      - cs-app
+      - py-app
+   - 2 services
+      - cs-svc
+      - py-svc
    - ingress
       - demo-ingress
    
    ```bash
-   kubectl apply -f deploy/demo.yaml
+   kubectl apply -f deploy/app-svc.yaml -f deploy/nginx-ingress.yaml
    # wait for deployment is completed and pods are running
    kubectl wait deployment/cs-app -n demo-ns --for=condition=available --timeout=2m
    # check pods
