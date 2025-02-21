@@ -20,7 +20,8 @@ app.MapGet("/ip", () => $"{razor}: {string.Join(", ", Dns.GetHostEntry(Dns.GetHo
 
 app.MapGet("/count", async context =>
 {
+    context.Response.ContentType = "text/plain; charset=utf-8";
     await context.Response.WriteAsync($"{razor}: {Environment.MachineName} #{Interlocked.Decrement(ref counter)}");
 });
 
-app.Run();
+await app.RunAsync();
