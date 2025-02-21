@@ -32,10 +32,11 @@ While load testing simple APIs written in `C#` and `Python`, it could be an idea
 1. Build API images
 
    ```bash
-   docker build -f .\src\csharp\Dockerfile .\src\csharp -t demo-cs:0.1
-   docker build -f .\src\python\Dockerfile .\src\python -t demo-py:0.1
+   docker build -f src/csharp/Dockerfile src/csharp/ -t demo-cs:0.1
+   docker build -f src/python/Dockerfile src/python/ -t demo-py:0.1
    # optionally tag images as latest
-   docker tag demo-cs:0.1 demo:latest
+   docker tag demo-cs:0.1 demo-cs:latest
+   docker tag demo-py:0.1 demo-py:latest
    ```
   
 2. Create local K8s cluster
@@ -60,7 +61,7 @@ While load testing simple APIs written in `C#` and `Python`, it could be an idea
       ⚠️ This cluster uses port 8️⃣0️⃣ allow ingress traffic, as specified under `extraPortMappings` in `cluster-config.yaml` file. If you are running any web server or application that has already claimed this port, cluster creation will fail.
 
       ```bash
-      kind create cluster --config deploy\cluster-config.yaml
+      kind create cluster --config deploy/cluster-config.yaml
       # check cluster info 
       kubectl cluster-info --context kind-demo-cl
       # live probe
@@ -116,11 +117,11 @@ While load testing simple APIs written in `C#` and `Python`, it could be an idea
       ```
       ### create alias
       
-      Unix Shell(s)
+      Bash alias for *nix shells
       ```bash
       alias kubectl='microk8s kubectl'
       ```
-      Powershell
+      Powershell alias for Windows
       ```cmd
       Set-Alias -Name 'microk8s kubectl' -Value kubectl
       ```
@@ -158,7 +159,9 @@ While load testing simple APIs written in `C#` and `Python`, it could be an idea
       - demo-ingress
    
    ```bash
-   kubectl apply -f .\deploy\demo.yaml
+   kubectl apply -f deploy/demo.yaml
+   # wait for deployment is completed and pods are running
+   kubectl wait deployment/cs-app -n demo-ns --for=condition=available --timeout=2m
    # check pods
    kubectl get pods -n demo-ns
    # describe ingress and check for rules
@@ -170,9 +173,9 @@ While load testing simple APIs written in `C#` and `Python`, it could be an idea
 5. Test Endpoints
 
    ```bash
-   curl localhost/cs/ping
+   curl -f localhost/cs/ping
    # 🪒: pong from demo-cs-798475b757-9mbww
-   curl localhost/py/random
+   curl -f localhost/py/random
    # 🐍: demo-py-5d78b48f8b-t4vmp generated random 8012255827640168882
    ```
 
@@ -182,7 +185,7 @@ While load testing simple APIs written in `C#` and `Python`, it could be an idea
 
    ```bash
    # after loading a new version
-   kubectl set image deployment/demo demo=demo:0.2 -n demo-ns
+   kubectl set image deployment/cs-app cs-app=demo-cs:0.2 -n demo-ns
    # check pods refreshing
    kubectl get pods -n demo-ns
    ```
