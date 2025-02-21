@@ -1,0 +1,19 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: envoy-gatewayclass
+  namespace: demo-ns
+spec:
+  controllerName: gateway.envoyproxy.io/gatewayclass-controller
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: envoy-gateway
+  namespace: demo-ns
+spec:
+  gatewayClassName: envoy-gatewayclass
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
